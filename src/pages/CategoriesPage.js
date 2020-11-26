@@ -95,7 +95,16 @@ const CategoriesPage = (props) => {
                 selectedCategory={selectedCategory} 
             />
             
-            { currentScreen === 'categoriesList' && <List setCategory={setCategory} listItems={categories} selectedItem={selectedCategory} classes={classes} /> }
+            { 
+                currentScreen === 'categoriesList' && 
+                <List 
+                    emptyText="No categories found!"
+                    setCategory={setCategory} 
+                    listItems={categories} 
+                    selectedItem={selectedCategory} 
+                    classes={classes} 
+                /> 
+            }
             { 
                 currentScreen === 'addNewCategory' && 
                 <Form 

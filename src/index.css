@@ -30,6 +30,10 @@ code {
   overflow-y: auto;
 }
 
+.list__empty {
+  margin-left: 24px;
+}
+
 .list__item__button {
   width: calc(100% - 24px);
   height: calc(100% - 0.7rem);

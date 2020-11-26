@@ -5,6 +5,7 @@ export default function List(props) {
   return (
     <div className="list__container">
         {
+            props.listItems.length > 0 ?
             props.listItems.map((item, index) => {
                 const buttonClassName = `list__item__button${props.selectedItem === item.name ? ' list__item__button--selected' : ''}`;
                 return (
@@ -21,6 +22,8 @@ export default function List(props) {
                     </Button>
                 );
             })
+            :
+            <p className="list__empty">{props.emptyText}</p>
         }
     </div>
   );
