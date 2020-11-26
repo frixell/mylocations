@@ -11,3 +11,63 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.app__preloader {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.list__container {
+  display: flex;
+  flex-direction: column;
+  width: 24vw;
+  height: calc(100vh - 64px);
+  margin-top: 64px;
+  overflow-y: auto;
+}
+
+.list__item__button {
+  width: calc(100% - 2.3vw);
+  height: calc(100% - 0.7rem);
+  text-align: left;
+  vertical-align: middle;
+  padding-left: 2.3vw;
+  padding-top: 0.7rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list__item__button--selected {
+  color: #fff;
+  background-color: #3f51b5;
+}
+
+.form__header__container {
+  width: 60%;
+  margin-top: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form__header {
+  width: 90%;
+}
+
+.topbar__button {
+  color: #fff;
+  margin-left: 2rem;
+}
+
+.topbar__container {
+  flex-grow: 1;
+}
+
+.topbar__title {
+  flex-grow: 1;
+}
