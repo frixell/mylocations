@@ -31,11 +31,11 @@ code {
 }
 
 .list__item__button {
-  width: calc(100% - 2.3vw);
+  width: calc(100% - 24px);
   height: calc(100% - 0.7rem);
   text-align: left;
   vertical-align: middle;
-  padding-left: 2.3vw;
+  padding-left: 24px;
   padding-top: 0.7rem;
   white-space: nowrap;
   overflow: hidden;
