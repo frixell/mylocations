@@ -22,16 +22,21 @@ code {
 }
 
 .list__container {
+  background: #3f8cb5;
   display: flex;
   flex-direction: column;
   width: 24vw;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 64px - 64px);
   margin-top: 64px;
   overflow-y: auto;
 }
 
 .list__empty {
   margin-left: 24px;
+}
+
+.list__map__container {
+  display: flex;
 }
 
 .list__item__button {
@@ -65,7 +70,6 @@ code {
 
 .topbar__button {
   color: #fff;
-  margin-left: 2rem;
 }
 
 .topbar__container {
@@ -74,4 +78,20 @@ code {
 
 .topbar__title {
   flex-grow: 1;
+}
+
+.bottombar__container {
+  flex-grow: 1;
+}
+
+.multiselect__container {
+  position: absolute;
+  top: 64px;
+  left: 24vw;
+  z-index: 9;
+}
+
+
+.MuiMenu-list {
+  background: #b5a33f
 }

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import AppRouter from './routers/AppRouter';
 import configureStore from './store/configureStore';
 import { startGetCategories } from './actions/categories';
+import { startGetLocations } from './actions/locations';
 
 import './index.css';
 
@@ -30,6 +31,8 @@ if (navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgen
 }
 
 store.dispatch(startGetCategories()).then(() => {
-  renderApp();
+    store.dispatch(startGetLocations()).then(() => {
+        renderApp();
+    });
 });
 

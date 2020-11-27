@@ -7,13 +7,13 @@ import Button from '@material-ui/core/Button';
 import { Cfg } from '../config/topBarCfg';
 
 export default function TopBar(props) {
-    const buttons = Cfg[props.currentContext].buttons;
+    const buttons = Cfg[props.currentContext]?.buttons || [];
     return (
         <div className="topbar__container">
             <AppBar position="fixed">
                 <Toolbar>
                     <Typography variant="h6" className="topbar__title">
-                        { !props.selectedCategory ? 'Categories' : props.selectedCategory }
+                        { !props.selectedItem ? Cfg[props.currentContext].header : props.selectedItem.name }
                     </Typography>
                     {
                       buttons.map((button,index) => {
