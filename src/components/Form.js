@@ -56,11 +56,16 @@ export default function Form(props) {
 
     const fields = JSON.parse(template(JSON.stringify(Cfg[props.currentContext]?.fields || []))({'name': formData?.name, 'address': formData?.address, 'longitude': formData?.longitude, 'latitude': formData?.latitude, 'formError': props.formError}));
   
-    let mainDisabled = props.formData?.name === '';
+    let mainDisabled = formData?.name === '' || formData?.name === undefined;
     let mapDisabled = false;
+    console.log(props.currentContext);
+    console.log('formData?.name', formData?.name);
+    console.log('formData?.address', formData?.address);
+    console.log('formData?.longitude', formData?.longitude);
+    console.log('formData?.latitude', formData?.latitude);
     if (props.currentContext === 'locationSelected' || props.currentContext === 'categoryView') {
-        mainDisabled = !(formData?.name !== '' && formData?.address !== '' && formData?.longitude !== '' && formData?.latitude !== '');
-        mapDisabled = !(formData?.name !== '' && formData?.address !== '');
+        mainDisabled = !(formData?.name !== '' && formData?.address !== '' && formData?.longitude !== '' && formData?.latitude !== '' && formData?.name !== undefined && formData?.address !== undefined && formData?.longitude !== undefined && formData?.latitude !== undefined);
+        mapDisabled = !(formData?.name !== '' && formData?.address !== '' && formData?.name !== undefined && formData?.address !== undefined);
     }
     return (
         <form className={classes.root} autoComplete="off" onSubmit={props.handleSubmit}>
