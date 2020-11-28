@@ -7,7 +7,7 @@ export default function List(props) {
             {
                 props.listItems.length > 0 ?
                     props.listItems.map((item, index) => {
-                        const buttonClassName = `list__item__button${props.selectedItem?.name === item.name && item.address ? ' list__item__button--selected' : ''}`;
+                        const buttonClassName = `list__item__button${props.selectedItem?.name === item.name && (item.address || props.locationsOrder !== 'group') ? ' list__item__button--selected' : ''}`;
                         const buttonRootClassName = item.address ? props.locationsOrder === 'group' ? props.classes.rootLocationGrouped : props.classes.rootLocation : props.locationsOrder === 'group' ? props.classes.rootGrouped : props.classes.root;
                         const buttonOnClick = !item.address && props.locationsOrder === 'group' ? null : props.setItem;
                         const disableRipple = !item.address && props.locationsOrder === 'group' ? true : false;

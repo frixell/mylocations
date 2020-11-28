@@ -461,7 +461,8 @@ const CategoriesPage = (props) => {
             <div className="list__map__container">
                 { 
                     (currentContext === 'categoriesList' || currentContext === 'categorySelected') && 
-                    <List 
+                    <List
+                        currentContext={currentContext}
                         emptyText="No categories found!"
                         setItem={setCategory} 
                         listItems={categories} 

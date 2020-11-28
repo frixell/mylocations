@@ -23,6 +23,7 @@ const useStyles = makeStyles(() => ({
         marginBottom: '0.5rem'
     },
     connectedButton: {
+        padding: 0,
         color: '#fff',
         backgroundColor: '#3f51b5',
         margin: '0 0.5rem',
@@ -33,6 +34,7 @@ const useStyles = makeStyles(() => ({
         }
     },
     connectButton: {
+        padding: 0,
         color: '#fff',
         backgroundColor: '#8cb53f',
         margin: '0 0.5rem',
@@ -42,6 +44,7 @@ const useStyles = makeStyles(() => ({
         }
     },
     disconnectButton: {
+        padding: 0,
         color: '#fff',
         backgroundColor: "#b53f51",
         margin: '0 0.5rem',
@@ -54,12 +57,12 @@ const useStyles = makeStyles(() => ({
 
 export default function CategoriesConnector(props) {
     const classes = useStyles();
-
+    
     return (
         <div className={classes.root}>
             
             {
-                props.categories && (props.selectedLocation.categories.length < props.categories.length) &&
+                (props.categories && props.selectedLocation.categories.length < props.categories.length) &&
                 <div className={classes.bottonsContainer}>
                     <h4>Connect to category:</h4>
                     {
@@ -67,7 +70,7 @@ export default function CategoriesConnector(props) {
                             if (!props.selectedLocation.categories.includes(category.name)) {
                                 return (
                                     <Button key={index} className={classes.connectButton} type="button" onClick={props.connectLocation}>
-                                        <div data-category={category.name}>{category.name}</div>
+                                        <div className="button__div" data-category={category.name}>{category.name}</div>
                                     </Button>
                                 )
                             }
@@ -78,7 +81,7 @@ export default function CategoriesConnector(props) {
             }
             
             {
-                props.categories && props.selectedLocation.categories.length > 1 &&
+                (props.categories && props.selectedLocation.categories.length > 1) &&
                 <div className={classes.bottonsContainer}>
                     <h4>Disconnect from category:</h4>
                     {
@@ -86,7 +89,7 @@ export default function CategoriesConnector(props) {
                             if (props.selectedLocation.categories.includes(category.name)) {
                                 return (
                                     <Button key={index} className={classes.disconnectButton} type="button" onClick={props.disconnectLocation}>
-                                        <div data-category={category.name}>{category.name}</div>
+                                        <div className="button__div" data-category={category.name}>{category.name}</div>
                                     </Button>
                                 )
                             }
@@ -97,11 +100,11 @@ export default function CategoriesConnector(props) {
             }
             
             {
-                props.categories && props.selectedLocation.categories.length === 1 &&
+                (props.categories && props.selectedLocation.categories.length === 1) &&
                 <div className={classes.bottonsContainer}>
                     <h4>Connected to: (at least 1 category in mandatory)</h4>
                     <Button className={classes.connectedButton} type="button">
-                        <div data-category={props.selectedLocation.categories[0]}>{props.selectedLocation.categories[0]}</div>
+                        <div className="button__div" data-category={props.selectedLocation.categories[0]}>{props.selectedLocation.categories[0]}</div>
                     </Button>
                 </div>
             }
