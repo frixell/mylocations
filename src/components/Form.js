@@ -58,11 +58,6 @@ export default function Form(props) {
   
     let mainDisabled = formData?.name === '' || formData?.name === undefined;
     let mapDisabled = false;
-    console.log(props.currentContext);
-    console.log('formData?.name', formData?.name);
-    console.log('formData?.address', formData?.address);
-    console.log('formData?.longitude', formData?.longitude);
-    console.log('formData?.latitude', formData?.latitude);
     if (props.currentContext === 'locationSelected' || props.currentContext === 'categoryView') {
         mainDisabled = !(formData?.name !== '' && formData?.address !== '' && formData?.longitude !== '' && formData?.latitude !== '' && formData?.name !== undefined && formData?.address !== undefined && formData?.longitude !== undefined && formData?.latitude !== undefined);
         mapDisabled = !(formData?.name !== '' && formData?.address !== '' && formData?.name !== undefined && formData?.address !== undefined);
