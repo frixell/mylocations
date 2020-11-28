@@ -13,7 +13,7 @@ export default function TopBar(props) {
             <AppBar position="fixed">
                 <Toolbar>
                     <Typography variant="h6" className="topbar__title">
-                        { !props.selectedItem ? Cfg[props.currentContext].header : props.selectedItem.name }
+                        { !props.selectedItem ? Cfg[props.currentContext]?.header : props.selectedItem?.name }
                     </Typography>
                     {
                       buttons.map((button,index) => {

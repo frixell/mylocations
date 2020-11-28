@@ -64,3 +64,31 @@ export const startEditLocation = (location, locationOrg) => {
         dispatch(editLocation(location, locationOrg));
     };
 };
+
+// CONNECT_TO_CATEGORY
+
+export const connectToCategory = (location, category) => ({
+    type: 'CONNECT_TO_CATEGORY',
+    location,
+    category
+});
+
+export const startConnectToCategory = (location, category) => {
+    return (dispatch) => {
+        dispatch(connectToCategory(location, category));
+    };
+};
+
+// DISCONNECT_FROM_CATEGORY
+
+export const disconnectFromCategory = (location, category) => ({
+    type: 'DISCONNECT_FROM_CATEGORY',
+    location,
+    category
+});
+
+export const startDisconnectFromCategory = (location, category) => {
+    return (dispatch) => {
+        dispatch(disconnectFromCategory(location, category));
+    };
+};

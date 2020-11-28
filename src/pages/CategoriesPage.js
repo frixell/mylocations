@@ -10,10 +10,11 @@ import MultiSelect from '../components/MultiSelect';
 
 import { startAddCategory, startRemoveCategory, startEditCategory } from '../actions/categories';
 import { startAddLocation, startRemoveLocation, startEditLocation } from '../actions/locations';
+import { startSetCurrentLocations } from '../actions/currentLocations';
 
 const useStyles = makeStyles({
     root: {
-        background: '#b5a33f',
+        backgroundColor: '#b5a33f',
         borderRadius: 0,
         border: 0,
         color: 'white',
@@ -26,7 +27,7 @@ const useStyles = makeStyles({
         }
     },
     rootGrouped: {
-        background: '#b5a33f',
+        backgroundColor: '#b5a33f',
         borderRadius: 0,
         border: 0,
         color: 'white',
@@ -40,7 +41,7 @@ const useStyles = makeStyles({
         }
     },
     rootLocation: {
-        background: '#8cb53f',
+        backgroundColor: '#8cb53f',
         borderRadius: 0,
         border: 0,
         color: 'white',
@@ -53,7 +54,7 @@ const useStyles = makeStyles({
         }
     },
     rootLocationGrouped: {
-        background: '#8cb53f',
+        backgroundColor: '#8cb53f',
         borderRadius: 0,
         border: 0,
         color: 'white',
@@ -94,13 +95,17 @@ const CategoriesPage = (props) => {
     const [selectedLocation, setSelectedLocation] = useState(undefined);
     const [formData, setFormData] = useState(JSON.stringify({}));
     const [isForm, setIsForm] = useState(false);
+    const [isView, setIsView] = useState(false);
     const [currentContext, setCurrentContext] = useState('categoriesList')
-    const [formError, setFormError] = useState('');
+    const [formError, setFormError] = useState([]);
     
     const [locationsOrder, setLocationsOrder] = useState(undefined);
     const [filterCategories, setFilterCategories] = useState([]);
+    
+    const [allowAddLocation, setAllowAddLocation] = useState(false);
 
     const setCategory = (e) => {
+        setIsView(false);
         const name = e.target.dataset.name;
         setCurrentContext('categorySelected');
         const filteredLocations = locations.filter(location => location.categories?.includes(name));
@@ -116,36 +121,44 @@ const CategoriesPage = (props) => {
     }
     
     useEffect(() => {
-        if (currentContext === 'categorySelected' || currentContext === 'categoryView' || currentContext === 'locationSelected') {
-            const filteredLocations = locations.filter(location => location.categories?.includes(selectedCategory?.name));
-            setCurrentLocations(filteredLocations);
+        if (selectedCategory && (currentContext === 'categorySelected' || currentContext === 'categoryView' || currentContext === 'locationSelected')) {
+            const filteredLocations = locations.filter(location => location.categories.length > 0 && location.categories?.includes(selectedCategory?.name));
+            setCurrentLocations(filteredLocations || []);
+            dispatch(startSetCurrentLocations(filteredLocations || []));
         } else if (locationsOrder === 'sort') {
             const sortedLocations = JSON.parse(JSON.stringify(locations)).sort((a, b) => a.name.localeCompare(b.name));
             setCurrentLocations(sortedLocations);
+            dispatch(startSetCurrentLocations(sortedLocations));
         } else if (locationsOrder === 'group') {
             const groupedLocations = [];
             categories.map((category) => {
                 groupedLocations.push(category)
                 locations.map((location) => {
                     if (location.categories.includes(category.name)) groupedLocations.push(location);
+                    return null;
                 });
+                return null;
             });
             setCurrentLocations(groupedLocations);
+            dispatch(startSetCurrentLocations(locations));
         } else if (locationsOrder === 'filter') {
             if (filterCategories.length === 0) {
                 setCurrentLocations(locations);
+                dispatch(startSetCurrentLocations(locations));
             } else {
                 const filteredLocations = [];
                 locations.map(location => {                    
                     if (location.categories.filter(category => filterCategories.includes(category)).length > 0) filteredLocations.push(location);
+                    return null;
                 });
                 setCurrentLocations(filteredLocations);
+                dispatch(startSetCurrentLocations(filteredLocations));
             }
         } else {
             setCurrentLocations(locations);
+            dispatch(startSetCurrentLocations(locations));
         }
-        
-    }, [categories, locations, selectedCategory, currentContext, locationsOrder, filterCategories]);
+    }, [categories, locations, selectedCategory, currentContext, locationsOrder, filterCategories, dispatch]);
     
       
     const handleSubmit = (e) => {
@@ -158,15 +171,29 @@ const CategoriesPage = (props) => {
                 };
                 const nameExists = categories.filter(category => category.name === newCategory.name);
                 if (nameExists.length) {
-                    setFormError('Category name exists.');
+                    setFormError(['Category name exists.']);
                 } else {
                     dispatch(startAddCategory(newCategory));
-                    // localStorage.removeItem('categories');
                     hideForm();
                 }
             } else {
-                dispatch(startEditCategory(JSON.parse(formData), selectedCategory));
-                setSelectedCategory(JSON.parse(formData));
+                const parsedFormData = JSON.parse(formData);
+                let categoryIndex = -1;
+                categories.map((category, index) => {
+                    if (category?.name === selectedCategory?.name) categoryIndex = index;
+                    return null;
+                });
+                let nameExists = false;
+                categories.map((category, index) => {
+                    if (index !== categoryIndex && category.name === parsedFormData.name) nameExists = true;
+                    return null;
+                });
+                if (nameExists) {
+                    setFormError(['Category name exists.']);
+                    return null;
+                }
+                dispatch(startEditCategory(parsedFormData, selectedCategory));
+                setSelectedCategory(parsedFormData);
                 hideForm();
             }
         } else if (currentContext === 'categoryView' || currentContext === 'locationSelected') {
@@ -179,19 +206,31 @@ const CategoriesPage = (props) => {
                 };
                 const nameExists = locations.filter(location => location.name === newLocation.name);
                 if (nameExists.length) {
-                    setFormError('Location name exists.');
+                    setFormError(['Location name exists.']);
                 } else {
                     dispatch(startAddLocation(newLocation));
-                    // localStorage.removeItem('categories');
                     hideForm();
                 }
             } else {
                 const parsedFormData = JSON.parse(formData);
+                let locationIndex = -1;
+                locations.map((location, index) => {
+                    if (location?.name === selectedLocation?.name) locationIndex = index;
+                    return null;
+                });
+                let nameExists = false;
+                locations.map((location, index) => {
+                    if (index !== locationIndex && location.name === parsedFormData.name) nameExists = true;
+                    return null;
+                });
+                if (nameExists) {
+                    setFormError(['Location name exists.']);
+                    return null;
+                }
                 const updatedLocation = {
                     name: parsedFormData.name,
                     address: parsedFormData.address,
                     location: {lon: parsedFormData.longitude || 0, lat: parsedFormData.latitude || 0},
-                    // TODO - add multi-categories option
                     categories: selectedLocation.categories
                 }
                 dispatch(startEditLocation(updatedLocation, selectedLocation));
@@ -199,19 +238,76 @@ const CategoriesPage = (props) => {
                 hideForm();
             }
         }
+        
+    }
+    
+    const addLocationFromMap = (location) => {
+        if (!selectedLocation) {
+            const parsedFormData = JSON.parse(formData);
+            const nameExists = locations.map((location, index) => {
+                if (location.name === parsedFormData.name) return true;
+                return false;
+            })[0];
+            if (nameExists) {
+                setFormError(['Location name exists.']);
+                setIsForm(true);
+                return;
+            }
+            const updatedLocation = {
+                name: parsedFormData.name,
+                address: parsedFormData.address,
+                location: {lon: location.location.lon, lat: location.location.lat},
+                categories: [selectedCategory.name]
+            }
+            
+            dispatch(startAddLocation(updatedLocation));
+            setAllowAddLocation(false);
+        } else {
+            const parsedFormData = JSON.parse(formData);
+            const updatedLocation = {
+                name: parsedFormData.name,
+                address: parsedFormData.address,
+                location: {lon: location.location.lon, lat: location.location.lat},
+                categories: selectedLocation.categories
+            }
+            dispatch(startEditLocation(updatedLocation, selectedLocation));
+            setSelectedLocation(updatedLocation);
+            const updatedLocations = currentLocations.map(location => {
+                if (location.name === selectedLocation.name) return updatedLocation;
+                return location;
+            });
+            setCurrentLocations(updatedLocations);
+            dispatch(startSetCurrentLocations(updatedLocations));
+            setAllowAddLocation(false);
+        }
         setFormData(JSON.stringify({}));
     }
     
-    const clearFormError = () => {
-        setFormError('');
+    const clickMapToUpdate = () => {
+        const parsedFormData = JSON.parse(formData);
+        let locationIndex = -1;
+        locations.map((location, index) => {
+            if (location?.name === selectedLocation?.name) locationIndex = index;
+            return null;
+        });
+        let nameExists = false;
+        locations.map((location, index) => {
+            if (index !== locationIndex && location.name === parsedFormData.name) nameExists = true;
+            return null;
+        });
+        if (nameExists) {
+            setFormError(['Location name exists.']);
+            return null;
+        }
+        setFormError([]);
+        setIsForm(false);
+        setAllowAddLocation(true);
     }
     
-    const newCategory = () => {
+    const cancelClickMapToUpdate = () => {
+        setFormError([]);
         setIsForm(true);
-    }
-    
-    const newLocation = () => {
-        setIsForm(true);
+        setAllowAddLocation(false);
     }
     
     const onFormDataChange = (e) => {
@@ -219,7 +315,42 @@ const CategoriesPage = (props) => {
         const value = e.target.value;
         const formDataIm = JSON.parse(formData);
         formDataIm[id] = value;
+        setFormError([]);
         setFormData(JSON.stringify(formDataIm));
+    }
+    
+    const connectLocation = (e) => {
+        const updatedLocation = JSON.parse(JSON.stringify(selectedLocation));
+        const categoryToAdds = e.target.dataset.category;
+        const updateCategories = updatedLocation.categories;
+        updateCategories.push(categoryToAdds);
+        updatedLocation.categories = updateCategories;
+        dispatch(startEditLocation(updatedLocation, selectedLocation));
+        setSelectedLocation(updatedLocation);
+    }
+    
+    const disconnectLocation = (e) => {
+        const updatedLocation = JSON.parse(JSON.stringify(selectedLocation));
+        const categoryToRemove = e.target.dataset.category;
+        if (updatedLocation.categories.length > 1) {
+            let updateCategories = updatedLocation.categories.filter(c => c !== categoryToRemove);
+            updatedLocation.categories = updateCategories;
+            dispatch(startEditLocation(updatedLocation, selectedLocation));
+            setSelectedLocation(updatedLocation);
+        }
+    }
+    
+    const clearFormError = () => {
+        setFormError([]);
+    }
+    
+    const newCategory = () => {
+        setIsForm(true);
+    }
+    
+    const newLocation = () => {
+        setFormData(JSON.stringify({}));
+        setIsForm(true);
     }
     
     const editCategory = () => {
@@ -243,11 +374,16 @@ const CategoriesPage = (props) => {
     }
     
     const viewCategory = () => {
+        setIsView(false);
         setCurrentContext('categoryView');
     }
     
     const viewLocation = () => {
-        setCurrentContext('locationView');
+        if (currentContext === 'locationSelected') {
+            setIsView(!isView);
+        } else {
+            setCurrentContext('locationView');
+        }
     }
     
     const deleteCategory = () => {
@@ -260,10 +396,13 @@ const CategoriesPage = (props) => {
     
     const hideForm = () => {
         setIsForm(false);
+        setFormError([]);
+        setFormData(JSON.stringify({}));
     }
     
     const setContext = (e) => {
         const newContext = e.target.dataset.context;
+        setIsForm(false);
         setLocationsOrder(undefined);
         setSelectedCategory(undefined);
         setSelectedLocation(undefined);
@@ -271,21 +410,21 @@ const CategoriesPage = (props) => {
     }
     
     const sortLocations = () => {
-        setLocationsOrder('sort');
+        setLocationsOrder(locationsOrder !== 'sort' ? 'sort' : '');
     }
     
     const groupLocations = () => {
-        setLocationsOrder('group');
+        setLocationsOrder(locationsOrder !== 'group' ? 'group' : '');
     }
     
     const filterLocations = () => {
-        setLocationsOrder('filter');
+        setLocationsOrder(locationsOrder !== 'filter' ? 'filter' : '');
     }
     
     const setFilterCategoriesFunc = (filters) => {
         setFilterCategories(filters);
     }
-
+    
     return (
         <div className='categories__container'>
             {
@@ -295,22 +434,26 @@ const CategoriesPage = (props) => {
                 </div>
             }
             
+            {
+                allowAddLocation &&
+                <div className="click__to__add" onClick={cancelClickMapToUpdate}>
+                    <h3>click map to update location or click here to cancel.</h3>
+                </div>
+            }
+            
             <TopBar
                 currentContext={currentContext}
                 newCategory={newCategory}
                 editCategory={editCategory}
                 viewCategory={viewCategory}
                 deleteCategory={deleteCategory}
-                
                 newLocation={newLocation}
                 editLocation={editLocation}
                 viewLocation={viewLocation}
                 deleteLocation={deleteLocation}
-                
                 sortLocations={sortLocations}
                 groupLocations={groupLocations}
                 filterLocations={filterLocations}
-                
                 selectedItem={selectedLocation || selectedCategory} 
             />
             
@@ -340,18 +483,17 @@ const CategoriesPage = (props) => {
                 }
                 <MapBox 
                     user={props.user}
-                    divings={currentLocations}
+                    locations={currentLocations}
                     follow={false}
                     currentX={0}
                     currentY={0}
                     currentAcc={0}
                     selectedProject={selectedLocation}
                     sidebarClickedItemId={undefined}
-                    allowAddBolard={false}
-                    allowAddDiving={false}
+                    allowAddLocation={allowAddLocation}
                     lang={'en'}
-                    addBolard={() => {}}
-                    addDiving={() => {}}
+                    isView={isView}
+                    addLocationFromMap={addLocationFromMap}
                     handleExpandBolard={() => {}}
                 />
             </div>
@@ -365,6 +507,11 @@ const CategoriesPage = (props) => {
                     hideForm={hideForm}
                     onFormDataChange={onFormDataChange}
                     handleSubmit={handleSubmit} 
+                    categories={selectedLocation && categories}
+                    selectedLocation={selectedLocation}
+                    connectLocation={connectLocation}
+                    disconnectLocation={disconnectLocation}
+                    clickMapToUpdate={clickMapToUpdate}
                 /> 
             }
             <BottomBar
