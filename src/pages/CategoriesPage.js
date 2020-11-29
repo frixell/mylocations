@@ -420,10 +420,19 @@ const CategoriesPage = (props) => {
         })
         dispatch(getLocations(tempLocations));
         dispatch(startRemoveCategory(selectedCategory));
+        setCurrentContext('categoriesList');
+        setSelectedCategory(undefined);
     }
     
     const deleteLocation = () => {
         dispatch(startRemoveLocation(selectedLocation));
+        if (selectedCategory) {
+            setCurrentContext('categoryView');
+        } else {
+            setCurrentContext('locationsList');
+        }
+        
+        setSelectedLocation(undefined);
     }
     
     const hideForm = () => {
