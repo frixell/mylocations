@@ -14,6 +14,7 @@ export const startGetLocations = () => {
     };
 };
 
+
 // ADD_LOCATION
 
 export const addLocation = (location) => ({

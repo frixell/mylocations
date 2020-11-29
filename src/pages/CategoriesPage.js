@@ -9,7 +9,7 @@ import MapBox from '../components/MapBox';
 import MultiSelect from '../components/MultiSelect';
 
 import { startAddCategory, startRemoveCategory, startEditCategory } from '../actions/categories';
-import { startAddLocation, startRemoveLocation, startEditLocation } from '../actions/locations';
+import { startAddLocation, startRemoveLocation, startEditLocation, getLocations } from '../actions/locations';
 import { startSetCurrentLocations } from '../actions/currentLocations';
 
 const useStyles = makeStyles({
@@ -194,6 +194,24 @@ const CategoriesPage = (props) => {
                 }
                 dispatch(startEditCategory(parsedFormData, selectedCategory));
                 setSelectedCategory(parsedFormData);
+                if (parsedFormData.name !== selectedCategory.name) {
+                    const tempLocations = [];
+                    locations.map(location => {
+                        const tempCategories = [];
+                        location.categories.map(category => {
+                            if (category === selectedCategory.name) {
+                                tempCategories.push(parsedFormData.name);
+                            } else {
+                                tempCategories.push(category);
+                            }
+                            return null;
+                        });
+                        location.categories = tempCategories;
+                        tempLocations.push(location);
+                        return null;
+                    })
+                    dispatch(getLocations(tempLocations));
+                }
                 hideForm();
             }
         } else if (currentContext === 'categoryView' || currentContext === 'locationSelected') {
