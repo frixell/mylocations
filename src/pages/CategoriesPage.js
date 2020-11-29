@@ -405,6 +405,20 @@ const CategoriesPage = (props) => {
     }
     
     const deleteCategory = () => {
+        const tempLocations = [];
+        locations.map(location => {
+            const tempCategories = [];
+            location.categories.map(category => {
+                if (category !== selectedCategory.name) {
+                    tempCategories.push(category);
+                }
+                return null;
+            });
+            location.categories = tempCategories;
+            tempLocations.push(location);
+            return null;
+        })
+        dispatch(getLocations(tempLocations));
         dispatch(startRemoveCategory(selectedCategory));
     }
     
@@ -460,6 +474,7 @@ const CategoriesPage = (props) => {
             }
             
             <TopBar
+                isForm={isForm}
                 currentContext={currentContext}
                 newCategory={newCategory}
                 editCategory={editCategory}

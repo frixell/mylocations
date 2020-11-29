@@ -16,7 +16,7 @@ export default function TopBar(props) {
                         { !props.selectedItem ? Cfg[props.currentContext]?.header : props.selectedItem?.name }
                     </Typography>
                     {
-                      buttons.map((button,index) => {
+                      !props.isForm && buttons.map((button,index) => {
                         return (
                             <Button
                               key={index}
